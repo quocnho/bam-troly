@@ -100,8 +100,15 @@ bam-troly/
   - Truyền token streaming qua Qt Signal/Slot (`Qt::QueuedConnection`) để UI luôn mượt 60fps.
 
 ## 5. Token Saving & Git Workflow
-- **Targeted Reading**: Sử dụng `grep_search` và `view_file` với `StartLine`/`EndLine` cụ thể.
+- **Bắt buộc đọc trước khi code**: [.agents/skills/troly-git-workflow/SKILL.md](file:///home/quocnho/Projects/Bam/BamApps/bam-troly/.agents/skills/troly-git-workflow/SKILL.md).
+- **Nhánh Git**: Mặc định phát triển trên `develop`. Nếu ở `main`, bắt buộc checkout sang `develop`. Tạo feature branch (`feat/troly-...`, `fix/...`, `refactor/...`) có xác nhận trong Refine & Reframe.
+- **Versioning Standard**: `AA.BB.CC` (ví dụ: `v26.01.01`). Bắt buộc tăng `CC` khi có tính năng mới hoặc thay đổi kiến trúc lớn.
+- **Commit theo What-Why-How**: Soạn thảo commit 3 phần (What, Why, How), `git add` và xin ý kiến xác nhận của người dùng trước khi commit.
+- **Targeted Reading**: Sử dụng `grep_search` và `view_file` có `StartLine`/`EndLine`.
 - **Không đọc**: `build/`, `.direnv/`, `.devenv/`, file nhị phân, model file `.gguf`, file `.db`.
-- **Versioning Standard**: `AA.BB.CC` (ví dụ: `v26.01.01`).
-- **Nhánh Git**: `develop` (dev chính), `main` (release có Git tag).
-- **Commit**: Conventional Commits (`feat(...)`, `fix(...)`, `refactor(...)`, `perf(...)`, `chore(...)`).
+
+## 6. Game Character Graphics Engine Invariants
+- **Kỹ thuật đồ họa**: Xem chi tiết tại [.agents/skills/game-character-graphics/SKILL.md](file:///home/quocnho/Projects/Bam/BamApps/bam-troly/.agents/skills/game-character-graphics/SKILL.md) và [.agents/rules/character_graphics_rules.md](file:///home/quocnho/Projects/Bam/BamApps/bam-troly/.agents/rules/character_graphics_rules.md).
+- **Skeletal & Hierarchical Transform**: Xây dựng nhân vật dựa trên cấu trúc xương và động lực học (Spring-Damper), cấm chắp vá DOM/Rectangle nguyên thủy phân mảnh.
+- **Batching & Zero-Alloc**: Kết xuất tối đa <= 2 Draw Calls trên GPU, không cấp phát heap trong vòng lặp render/tick.
+
