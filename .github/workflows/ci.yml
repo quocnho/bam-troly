@@ -1,0 +1,72 @@
+name: "CI/CD: Bam Tro Ly"
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+    tags: [ "v*" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+permissions:
+  contents: write
+
+jobs:
+  lint:
+    name: "Lint & Check"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@v16
+      - uses: DeterminateSystems/magic-nix-cache-action@v8
+      - name: "Check Flake"
+        run: nix flake check --no-build
+
+  build:
+    name: "Build & Push Cachix"
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@v16
+      - uses: cachix/cachix-action@v15
+        with:
+          name: bamos
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+      - name: "Build Derivation"
+        run: nix build -L .#default
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bam-troly-x86_64
+          path: result/bin/bam-troly
+
+  release:
+    name: "GitHub Release"
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: bam-troly-x86_64
+          path: ./bin
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: ./bin/bam-troly
+          generate_release_notes: true
+
+  notify-bamos:
+    name: "Dispatch Bump to BamOS"
+    needs: build
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Trigger update webhook on BamOS"
+        env:
+          GH_PAT: ${{ secrets.BAM_DISPATCH_TOKEN }}
+        if: env.GH_PAT != ''
+        run: |
+          curl -L -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.BAM_DISPATCH_TOKEN }}" \
+            https://api.github.com/repos/quocnho/BamOS/dispatches \
+            -d "{\"event_type\": \"bump-bam-troly\", \"client_payload\": {\"ref\": \"${{ github.ref_name }}\"}}"
