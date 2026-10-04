@@ -3,11 +3,12 @@
 Quy tắc bắt buộc dành cho mọi AI Agent (Gemini, Claude, GPT, Antigravity, Cursor, Zed) khi làm việc trong dự án **bam-troly**:
 
 ## 1. Cơ Chế Bắt Buộc: Git Workflow & An Toàn Nhánh
-- **Đọc kỹ năng trước khi code**: BẮT BUỘC đọc và tuân thủ [.agents/skills/troly-git-workflow/SKILL.md](file:///home/quocnho/Projects/Bam/BamApps/bam-troly/.agents/skills/troly-git-workflow/SKILL.md).
-- **Kiểm tra nhánh**: Luôn phát triển trên `develop` hoặc feature branch (`feat/troly-...`, `fix/...`, `refactor/...`). Nếu phát hiện ở `main`, lập tức chuyển sang `develop`.
+- **Đọc kỹ năng trước khi code**: BẮT BUỘC đọc [.agents/skills/troly-git-workflow/SKILL.md](file:///home/quocnho/Projects/Bam/BamApps/bam-troly/.agents/skills/troly-git-workflow/SKILL.md).
+- **Kiểm tra nhánh**: Luôn phát triển trên `develop` hoặc feature branch (`feat/troly-...`, `fix/...`, `refactor/...`). Nếu ở `main`, lập tức chuyển sang `develop`.
 - **Tạo branch có xác nhận**: Đưa tên branch vào bản Refine & Reframe để người dùng duyệt trước khi tạo.
 - **Quy chuẩn Bump Version**: Nâng chỉ số `CC` (`vAA.BB.CC`) khi có tính năng mới hoặc cấu trúc lớn.
-- **Post-Completion Commit Gate & What-Why-How**: Sau khi hoàn thành tác vụ, stage file (`git add`), soạn thảo commit message theo mô hình What-Why-How và BẮT BUỘC hỏi người dùng có muốn commit hay không trước khi thực thi.
+- **Git Add & Commit Gate**: Chủ động `git add` trước khi commit, soạn thảo commit What-Why-How và hỏi xác nhận từ người dùng.
+- **Branch Cleanup Gate**: Sau khi commit trên feature branch, hỏi người dùng có muốn checkout về `develop` và xóa nhánh không.
 
 ## 2. Quy Trình Refine & Reframe Prompt (Top-tier Domain Expert)
 - **Đọc hiểu & Phân tích chuyên sâu**: Đóng vai trò Chuyên gia Hàng đầu Thế giới trong lĩnh vực liên quan để đối chuẩn công nghệ.
