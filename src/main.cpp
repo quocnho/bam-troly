@@ -4,11 +4,17 @@
 #include "presentation/app_controller.hpp"
 
 int main(int argc, char *argv[]) {
-    // Under pure Wayland (xdg-shell), compositors strictly forbid client-side positioning.
-    // Enforcing XWayland (xcb) on Linux allows exact bottom-right corner positioning.
-    const char *sessionType = getenv("XDG_SESSION_TYPE");
-    if (sessionType && strcmp(sessionType, "wayland") == 0) {
-        qputenv("QT_QPA_PLATFORM", "xcb;wayland");
+    // Enable fractional High-DPI scaling inheritance from system (e.g. 133% on BamOS)
+    QGuiApplication::setHighDpiScaleFactorRoundingPolicy(
+        Qt::HighDpiScaleFactorRoundingPolicy::PassThrough
+    );
+
+    // Respect existing QT_QPA_PLATFORM from OS/environment; default to Wayland first
+    if (!qEnvironmentVariableIsSet("QT_QPA_PLATFORM")) {
+        const char *sessionType = getenv("XDG_SESSION_TYPE");
+        if (sessionType && strcmp(sessionType, "wayland") == 0) {
+            qputenv("QT_QPA_PLATFORM", "wayland;xcb");
+        }
     }
 
     QGuiApplication app(argc, argv);
