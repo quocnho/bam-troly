@@ -15,8 +15,13 @@ Window {
 
     function realignToDog() {
         if (!dogWindow) return;
-        x = Math.max(10, dogWindow.x + dogWindow.width - width);
-        y = (dogWindow.y - height - 8 >= 10) ? (dogWindow.y - height - 8) : (dogWindow.y + dogWindow.height + 8);
+        var sW = Screen.desktopAvailableWidth > 0 ? Screen.desktopAvailableWidth : Screen.width;
+        var sH = Screen.desktopAvailableHeight > 0 ? Screen.desktopAvailableHeight : Screen.height;
+        var targetX = dogWindow.x + (dogWindow.width - width) / 2;
+        var targetY = dogWindow.y - height - 12;
+        if (targetY < 12) targetY = Math.min(sH - height - 12, dogWindow.y + dogWindow.height + 12);
+        x = Math.max(12, Math.min(sW - width - 12, targetX));
+        y = Math.max(12, Math.min(sH - height - 12, targetY));
     }
 
     onVisibleChanged: if (visible) realignToDog()

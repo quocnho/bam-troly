@@ -2,10 +2,10 @@ import QtQuick
 
 Rectangle {
     id: btnRoot
-    width: 28; height: 28; radius: 14
-    color: mouseArea.containsMouse ? (isDanger ? "#E04040" : (isActive ? "#4D96FF" : "#3F4452"))
-                                  : (isActive ? "#3B82F6" : "#242730")
-    border.color: isActive ? "#60A5FA" : (mouseArea.containsMouse ? "#6B7280" : "#374151")
+    width: 26; height: 26; radius: 13
+    color: mouseArea.containsMouse ? (isDanger ? "#DC2626" : (isActive ? "#3B82F6" : "#374151"))
+                                  : (isActive ? "#2563EB" : "#1F2937")
+    border.color: isActive ? "#60A5FA" : (mouseArea.containsMouse ? "#9CA3AF" : "#4B5563")
     border.width: 1
 
     property string iconText: ""
@@ -30,6 +30,9 @@ Rectangle {
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        onClicked: btnRoot.clicked()
+        acceptedButtons: Qt.LeftButton
+        propagateComposedEvents: false
+        preventStealing: true
+        onClicked: (mouse) => { mouse.accepted = true; btnRoot.clicked(); }
     }
 }

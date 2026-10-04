@@ -32,6 +32,7 @@ public:
     Q_INVOKABLE QPoint getSavedPosition(int defaultX, int defaultY);
     Q_INVOKABLE QPoint getCursorPos();
     Q_INVOKABLE void toggleDesktopTheme();
+    Q_INVOKABLE void quitApp();
 
 signals:
     void isGeneratingChanged();

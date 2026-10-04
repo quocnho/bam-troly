@@ -87,7 +87,9 @@ QPoint AppController::getSavedPosition(int defaultX, int defaultY) {
 }
 
 #include <QCursor>
+#include <QCoreApplication>
 QPoint AppController::getCursorPos() { return QCursor::pos(); }
+void AppController::quitApp() { QCoreApplication::quit(); }
 
 void AppController::toggleDesktopTheme() {
     m_isDarkTheme = !m_isDarkTheme;

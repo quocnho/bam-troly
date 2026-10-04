@@ -2,9 +2,10 @@ import QtQuick
 
 Item {
     id: barRoot
-    width: 34; height: col.height
+    width: 28; height: col.height
     opacity: isVisible ? 1.0 : 0.0
     visible: opacity > 0.001
+    z: 100
 
     property bool isVisible: false
     property bool isDragArmed: false
@@ -14,7 +15,7 @@ Item {
     signal hoverEntered()
     signal hoverExited()
 
-    Behavior on opacity { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
+    Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
 
     HoverHandler {
         onHoveredChanged: if (hovered) barRoot.hoverEntered(); else barRoot.hoverExited()
@@ -22,7 +23,7 @@ Item {
 
     Column {
         id: col
-        spacing: 6
+        spacing: 5
         anchors.centerIn: parent
 
         MascotActionButton {
@@ -39,9 +40,9 @@ Item {
         }
 
         MascotActionButton {
-            iconText: "🚪"
+            iconText: "⏻"
             isDanger: true
-            toolTipText: "Thoát ứng dụng"
+            toolTipText: "Tắt ứng dụng"
             onClicked: barRoot.triggerExit()
         }
     }
