@@ -6,11 +6,10 @@ Item {
     width: 116; height: 116
     readonly property alias dogState: controller.dogState
     property var targetWindow: null; property var appController: null
-    signal clicked(); signal requestShowMenu(); signal hoverExited(); signal showTime()
+    signal clicked(); signal hoverEntered(); signal hoverExited(); signal showTime()
 
     function setDogState(state) { controller.dogState = state }
     function wakeUp() { controller.triggerWakeAndBark() }
-    function showMenu() { mascotHostRoot.requestShowMenu(); rig.jumpAndBounce(); }
 
     MascotInteractionController { id: controller; mascotRig: rig }
     PlayfulBehavior { mascotRig: rig; dogState: controller.dogState }
@@ -63,8 +62,8 @@ Item {
             rig.gazeX = Math.max(-2.5, Math.min(2.5, dx * 2.5)); rig.gazeY = Math.max(-2.0, Math.min(2.0, dy * 2.0));
             rig.isTrackingMouse = true;
         }
-        onEntered: { lastX = -1; lastY = -1; rig.isTrackingMouse = true; if (controller.dogState === "active") hoverFlow.triggerHoverFlow(); mascotHostRoot.showMenu(); }
+        onEntered: { lastX = -1; lastY = -1; rig.isTrackingMouse = true; if (controller.dogState === "active") hoverFlow.triggerHoverFlow(); mascotHostRoot.hoverEntered(); }
         onExited: { lastX = -1; lastY = -1; rig.isTrackingMouse = false; rig.gazeX = 0; rig.gazeY = 0; controller.handleMouseLeave(); mascotHostRoot.hoverExited(); }
-        onClicked: (mouse) => mouse.button === Qt.RightButton ? mascotHostRoot.showMenu() : (controller.triggerWakeAndBark(), rig.jumpAndBounce(), mascotHostRoot.clicked())
+        onClicked: (mouse) => { controller.triggerWakeAndBark(); rig.jumpAndBounce(); mascotHostRoot.clicked(); }
     }
 }

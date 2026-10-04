@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-project(bam-troly VERSION 26.01.01 LANGUAGES CXX)
+project(bam-troly VERSION 26.01.02 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -65,11 +65,10 @@ qt_add_qml_module(bam-troly
         qml/dialogs/ConfirmDialog.qml
         qml/common/StatusIndicator.qml
         qml/common/HourlyClockPopup.qml
-        qml/menu/RadialMenuItem.qml
-        qml/menu/RadialMenuView.qml
-        qml/menu/RadialMenuWindow.qml
+        qml/mascot/MascotActionBar.qml
+        qml/mascot/MascotActionButton.qml
+        qml/mascot/behaviors/MascotFollowMover.qml
     RESOURCES
-        qml/menu/RadialArcSolver.js
         assets/images/dog_bark.png
         assets/images/dog_run.png
         assets/images/dog_sit.png
