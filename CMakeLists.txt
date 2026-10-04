@@ -54,7 +54,7 @@ qt_add_qml_module(bam-troly
         qml/mascot/behaviors/IntroRunner.qml
         qml/mascot/behaviors/MascotWindowTracker.qml
         qml/chat/ChatWindow.qml
-        qml/chat/FloatingChatWindow.qml
+        qml/chat/ChatPanel.qml
         qml/chat/ChatHeader.qml
         qml/chat/MessageList.qml
         qml/chat/MessageBubble.qml
