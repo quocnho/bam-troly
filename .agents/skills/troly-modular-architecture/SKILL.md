@@ -18,4 +18,8 @@ description: Thực thi trần dòng (<80 dòng QML/Nix, <100 dòng C++), kiến
 - **Sửa Vi Phẫu (Surgical Edits)**:
   - Dùng `replace_file_content` hoặc `multi_replace_file_content` cho các chunk nhỏ.
   - Tuyệt đối không ghi đè cả file lớn khi chỉ sửa vài dòng.
+- **Phân Rã UI & Single Dynamic Window (Frame Decomposition)**:
+  - Chỉ duy trì 1 gốc `Window` duy nhất. Các màn hình chức năng (Chat, Settings, Tabs) phải là các `Item`/`Frame` con, không tạo thêm `Window` mới.
+  - Tách các tab/panel thành các module con độc lập (<80 dòng) nạp qua `Loader` hoặc `StackView` để tối ưu thời gian khởi động và bộ nhớ.
 - **100% FOSS**: Chỉ dùng giấy phép mã nguồn mở tự do (MIT, LGPLv3, Apache-2.0).
+

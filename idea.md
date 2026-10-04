@@ -3,7 +3,8 @@
 Ghi nhanh các ý tưởng hoặc yêu cầu cải tiến vào danh sách bên dưới:
 
 ## 📝 Ý Tưởng Mới Cần Xử Lý (Draft Ideas)
-- [ ] **Ý tưởng 1**: 
+- [x] **Ý tưởng 1**: Kiến trúc 1 Cửa Sổ Co Giãn Động (Single Dynamic Window) & Frame/Tab Panels (Đã lưu `[IDEA-BAM-TROLY-20261004-01]`).
+- [ ] **Ý tưởng 2**: 
 
 ---
 

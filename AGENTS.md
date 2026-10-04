@@ -39,4 +39,5 @@ bam-troly/
 - **Trần dòng**: < 80 dòng/file (QML, Nix, CMake), < 100 dòng/file (C++).
 - **Tiết kiệm token**: Dùng `grep_search` và `view_file` có `StartLine`/`EndLine`. Không đọc file rác/binary.
 - **Git**: Phát triển trên `develop` hoặc feature branch. Bump `CC` (`vAA.BB.CC`) khi có tính năng/refactor lớn. Stage bằng `git add` và xin ý kiến xác nhận commit.
-- **UI & AI**: Frameless, kéo thả Wayland, `llama.cpp` tách riêng luồng `std::jthread`, UI 60fps, 100% FOSS.
+- **UI & Surface Model**: Kiến trúc **Single Dynamic Window** (1 Native Surface duy nhất co giãn kích thước động giữa Mascot và Chat/Tab Panels; nghiêm cấm tách nhiều Window độc lập hoặc dùng Fullscreen đục lỗ gây hao hụt VRAM và lỗi Wayland input protocol). Frameless, kéo thả Wayland, `llama.cpp` tách riêng luồng `std::jthread`, UI 60fps, 100% FOSS.
+

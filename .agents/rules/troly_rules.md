@@ -20,7 +20,9 @@ Quy tắc bắt buộc dành cho mọi AI Agent khi làm việc trong dự án *
 - Chủ động `git add`, soạn commit What-Why-How và hỏi xác nhận từ người dùng trước khi commit.
 
 ## 5. UI & Architecture Invariants
+- **Mô hình Surface**: Bắt buộc **Single Dynamic Window** (1 Native Window duy nhất, co giãn geometry linh hoạt). Cấm tạo nhiều Window con độc lập và cấm dùng Window fullscreen đục lỗ (input mask) để tránh lỗi Wayland input protocol và lãng phí VRAM.
 - Nền trong suốt, frameless, `Qt.WindowStaysOnTopHint`, kéo thả bằng `DragHandler` + `startSystemMove()`.
 - AI Inference (`llama.cpp`) chạy trên `std::jthread`, truyền token qua Qt Signal/Slot (non-blocking UI 60fps).
 - Đồ họa nhân vật: Skeletal hierarchy, spring physics, Draw Calls <= 2.
 - 100% FOSS: Giấy phép tự do (MIT, LGPLv3, Apache-2.0).
+
