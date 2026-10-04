@@ -16,7 +16,8 @@ Quy tắc bắt buộc dành cho mọi AI Agent khi làm việc trong dự án *
 
 ## 4. Git Invariants
 - Phát triển trên `develop` hoặc feature branch (`feat/troly-...`, `fix/...`, `refactor/...`). Không sửa trực tiếp trên `main`.
-- Nâng `CC` (`vAA.BB.CC`) khi có tính năng/refactor lớn.
+- Nâng `CC` (`vAA.BB.CC`) khi có tính năng/refactor lớn hoặc trước khi merge vào `main`.
+- **CI/CD**: Chỉ trigger trên `main` hoặc release tag `v*` (không chạy trên `develop` / PRs).
 - Chủ động `git add`, soạn commit What-Why-How và hỏi xác nhận từ người dùng trước khi commit.
 
 ## 5. UI & Architecture Invariants

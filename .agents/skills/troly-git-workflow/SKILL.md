@@ -5,9 +5,10 @@ description: Chuẩn Git workflow, AA.BB.CC versioning, What-Why-How commit và 
 
 # Bam Trợ Lý Git Workflow & Versioning Skill
 
-## 1. Kiểm Soát Nhánh
+## 1. Kiểm Soát Nhánh & CI/CD
 - **Nhánh mặc định**: Luôn ở `develop`. Thấy `main` -> chuyển ngay sang `develop`.
 - **Feature branch**: `feat/troly-...`, `fix/...`, `refactor/...`. Xác nhận tên branch trong Refine Gate.
+- **CI/CD Invariant**: Pipeline chỉ kích hoạt khi `push` lên `main` hoặc release tag (`v*`). `develop` và feature branches không chạy CI để tiết kiệm quota.
 
 ## 2. Nâng Phiên Bản (`AA.BB.CC`)
 - Tăng `CC` (`vAA.BB.CC`) khi có tính năng mới (`feat`), tái cấu trúc lớn (`refactor`), hoặc trước khi merge vào `main`.
