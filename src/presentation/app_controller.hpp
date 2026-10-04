@@ -12,14 +12,16 @@ class AppController : public QObject {
     Q_PROPERTY(bool isExpanded READ isExpanded WRITE setExpanded NOTIFY isExpandedChanged)
 
     Q_PROPERTY(bool isDarkTheme READ isDarkTheme NOTIFY themeChanged)
+    Q_PROPERTY(QObject* physics READ physics CONSTANT)
 
 public:
     explicit AppController(QObject *parent = nullptr);
-    ~AppController() override = default;
+    ~AppController() override;
 
     bool isGenerating() const { return m_isGenerating; }
     bool isExpanded() const { return m_isExpanded; }
     bool isDarkTheme() const { return m_isDarkTheme; }
+    QObject* physics() const;
     void setExpanded(bool expanded);
 
     Q_INVOKABLE void sendMessage(const QString &text);
@@ -44,4 +46,5 @@ private:
     bool m_isDarkTheme{true};
     std::shared_ptr<DbManager> m_db;
     std::unique_ptr<AgentWorkflow> m_workflow;
+    class MascotPhysics *m_physics{nullptr};
 };

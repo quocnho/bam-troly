@@ -24,7 +24,7 @@
   ];
 
   env = {
-    QT_QPA_PLATFORM = "xcb;wayland";
+    QT_QPA_PLATFORM = "wayland;xcb";
   };
 
   scripts.troly.exec = ''
