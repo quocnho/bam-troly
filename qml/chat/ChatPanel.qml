@@ -21,7 +21,10 @@ Item {
     ConfirmDialog {
         id: confirmDialog; visible: false; anchors.centerIn: parent
         controller: appController
-        onConfirmed: (clearData) => { if (clearData) chatView.clearHistory(); Qt.quit(); }
+        onConfirmed: (clearData) => {
+            if (clearData) chatView.clearHistory();
+            if (appController) appController.quitApp(); else Qt.quit();
+        }
         onCancelled: confirmDialog.visible = false
     }
 

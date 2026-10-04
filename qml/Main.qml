@@ -14,29 +14,27 @@ Window {
     flags: isPinned ? (Qt.Tool | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
                     : (Qt.Tool | Qt.FramelessWindowHint)
 
-    Timer { id: savePosTimer; interval: 400; repeat: false; onTriggered: if (appController && initialized && !isMovingDog) appController.savePosition(x, y + (isExpanded ? 590 : 0)) }
+    Timer { id: savePosTimer; interval: 400; repeat: false; onTriggered: if (appController && initialized && !isMovingDog) appController.savePosition(x + (isExpanded ? 274 : 0), y + (isExpanded ? 590 : 0)) }
     onXChanged: if (initialized && !isMovingDog) savePosTimer.restart()
     onYChanged: if (initialized && !isMovingDog) savePosTimer.restart()
 
     onIsExpandedChanged: {
         if (!initialized) return
-        var sW = Screen.desktopAvailableWidth > 0 ? Screen.desktopAvailableWidth : Screen.width
-        var sH = Screen.desktopAvailableHeight > 0 ? Screen.desktopAvailableHeight : Screen.height
-        if (isExpanded) {
-            y = Math.max(12, y - 590); x = Math.max(12, Math.min(sW - 412, x - 274))
-            Qt.callLater(chatPanel.focusInput)
-        } else { y = Math.min(sH - 128, y + 590); x = Math.min(sW - 138, x + 274); }
+        if (isExpanded) { x -= 274; y -= 590; Qt.callLater(chatPanel.focusInput) }
+        else { x += 274; y += 590 }
     }
 
     function updateWindowPos() {
         var sW = Screen.desktopAvailableWidth > 0 ? Screen.desktopAvailableWidth : Screen.width
         var sH = Screen.desktopAvailableHeight > 0 ? Screen.desktopAvailableHeight : Screen.height
-        var defX = Math.max(10, sW - 146); var defY = Math.max(10, sH - 136)
-        if (appController) {
-            var p = appController.getSavedPosition(defX, defY)
-            x = (p.x <= 10 || p.x > sW - 126) ? defX : p.x
-            y = (p.y <= 10 || p.y > sH - 116) ? defY : p.y
-        } else { x = defX; y = defY; }
+        var dpr = Screen.devicePixelRatio || 1.0
+        var dpi = Screen.logicalPixelDensity > 0 ? Screen.logicalPixelDensity * 25.4 : 96.0
+        if (appController) appController.saveDisplayMetrics(dpr, dpi)
+        var margin = 10; var defDogX = sW - 126 - margin; var defDogY = sH - 116 - margin
+        var p = appController ? appController.getSavedPosition(defDogX, defDogY) : Qt.point(defDogX, defDogY)
+        var dogX = (p.x <= 10 || p.x > sW - 126) ? defDogX : p.x
+        var dogY = (p.y <= 10 || p.y > sH - 116) ? defDogY : p.y
+        x = isExpanded ? dogX - 274 : dogX; y = isExpanded ? dogY - 590 : dogY
         Qt.callLater(() => { initialized = true; })
     }
     Component.onCompleted: { updateWindowPos(); dogHost.wakeUp(); }

@@ -22,13 +22,8 @@ AppController::AppController(QObject *parent)
         }
     }
 
-    QString savedTheme = m_db->getSetting("app_theme", "");
-    if (!savedTheme.isEmpty()) {
-        m_isDarkTheme = (savedTheme == "dark");
-    } else {
-        QProcess p; p.start("gsettings", {"get", "org.gnome.desktop.interface", "color-scheme"});
-        if (p.waitForFinished(500)) m_isDarkTheme = !QString::fromUtf8(p.readAllStandardOutput()).contains("prefer-light");
-    }
+    QString savedTheme = m_db->getSetting("app_theme", "dark");
+    m_isDarkTheme = (savedTheme != "light");
 
     auto ai = std::make_shared<LlamaEngine>();
     auto tools = std::make_shared<ToolRegistry>();
@@ -77,6 +72,10 @@ void AppController::savePosition(int x, int y) {
     m_db->setSetting("pos_x", QString::number(x));
     m_db->setSetting("pos_y", QString::number(y));
 }
+void AppController::saveDisplayMetrics(double scale, double dpi) {
+    m_db->setSetting("display_scale", QString::number(scale));
+    m_db->setSetting("display_dpi", QString::number(dpi));
+}
 QPoint AppController::getSavedPosition(int defaultX, int defaultY) {
     QString sx = m_db->getSetting("pos_x", "");
     QString sy = m_db->getSetting("pos_y", "");
@@ -85,7 +84,11 @@ QPoint AppController::getSavedPosition(int defaultX, int defaultY) {
     return QPoint(okX ? x : defaultX, okY ? y : defaultY);
 }
 QPoint AppController::getCursorPos() { return QCursor::pos(); }
-void AppController::quitApp() { QCoreApplication::quit(); }
+void AppController::quitApp() {
+    m_db->setSetting("pos_x", "");
+    m_db->setSetting("pos_y", "");
+    QCoreApplication::quit();
+}
 
 void AppController::toggleDesktopTheme() {
     m_isDarkTheme = !m_isDarkTheme;
