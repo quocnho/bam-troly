@@ -2,10 +2,8 @@ name: "CI/CD: Bam Tro Ly"
 
 on:
   push:
-    branches: [ "main", "develop" ]
+    branches: [ "main" ]
     tags: [ "v*" ]
-  pull_request:
-    branches: [ "main", "develop" ]
 
 permissions:
   contents: write
@@ -17,7 +15,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@v16
-      - uses: DeterminateSystems/magic-nix-cache-action@v8
       - name: "Check Flake"
         run: nix flake check --no-build
 
