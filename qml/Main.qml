@@ -31,13 +31,13 @@ Window {
     function updateWindowPos() {
         var sW = Screen.desktopAvailableWidth > 0 ? Screen.desktopAvailableWidth : Screen.width
         var sH = Screen.desktopAvailableHeight > 0 ? Screen.desktopAvailableHeight : Screen.height
-        var defX = sW - 150; var defY = sH - 140
+        var defX = Math.max(10, sW - 146); var defY = Math.max(10, sH - 136)
         if (appController) {
             var p = appController.getSavedPosition(defX, defY)
             x = (p.x <= 10 || p.x > sW - 126) ? defX : p.x
             y = (p.y <= 10 || p.y > sH - 116) ? defY : p.y
         } else { x = defX; y = defY; }
-        initialized = true
+        Qt.callLater(() => { initialized = true; })
     }
     Component.onCompleted: { updateWindowPos(); dogHost.wakeUp(); }
 

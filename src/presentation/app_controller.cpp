@@ -4,15 +4,24 @@
 #include "plugins/builtins/memory_tool.cpp"
 
 #include <QProcess>
+#include <QFile>
 
 AppController::AppController(QObject *parent)
     : QObject(parent),
       m_db(std::make_shared<DbManager>()),
       m_physics(new MascotPhysics(this)) {
-
     m_db->initDatabase();
 
-    // Mặc định bằng chế độ của hệ thống hoặc cài đặt đã lưu
+    // Reset vị trí về mặc định nếu reboot hệ điều hành (boot_id mới)
+    QFile bootFile("/proc/sys/kernel/random/boot_id");
+    if (bootFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QString currentBoot = QString::fromUtf8(bootFile.readAll()).trimmed();
+        if (!currentBoot.isEmpty() && m_db->getSetting("last_boot_id", "") != currentBoot) {
+            m_db->setSetting("pos_x", ""); m_db->setSetting("pos_y", "");
+            m_db->setSetting("last_boot_id", currentBoot);
+        }
+    }
+
     QString savedTheme = m_db->getSetting("app_theme", "");
     if (!savedTheme.isEmpty()) {
         m_isDarkTheme = (savedTheme == "dark");
@@ -39,55 +48,42 @@ AppController::AppController(QObject *parent)
 }
 
 AppController::~AppController() = default;
-
 QObject* AppController::physics() const { return m_physics; }
 
 void AppController::setExpanded(bool expanded) {
-    if (m_isExpanded != expanded) {
-        m_isExpanded = expanded;
-        emit isExpandedChanged();
-    }
+    if (m_isExpanded != expanded) { m_isExpanded = expanded; emit isExpandedChanged(); }
 }
 
 void AppController::sendMessage(const QString &text) {
     if (text.trimmed().isEmpty() || m_isGenerating) return;
-
-    m_isGenerating = true;
-    emit isGeneratingChanged();
+    m_isGenerating = true; emit isGeneratingChanged();
     m_workflow->processUserMessage(text);
 }
 
 void AppController::stopGeneration() {
-    if (m_isGenerating) {
-        m_workflow->stop();
-        m_isGenerating = false;
-        emit isGeneratingChanged();
-    }
+    if (m_isGenerating) { m_workflow->stop(); m_isGenerating = false; emit isGeneratingChanged(); }
 }
 
 #include <QGuiApplication>
 #include <QClipboard>
+#include <QCursor>
+#include <QCoreApplication>
 
-void AppController::clearHistory() {
-    m_db->clearHistory();
-}
-
+void AppController::clearHistory() { m_db->clearHistory(); }
 void AppController::copyToClipboard(const QString &text) {
     if (auto clip = QGuiApplication::clipboard()) clip->setText(text);
 }
-
 void AppController::savePosition(int x, int y) {
     m_db->setSetting("pos_x", QString::number(x));
     m_db->setSetting("pos_y", QString::number(y));
 }
-
 QPoint AppController::getSavedPosition(int defaultX, int defaultY) {
-    return QPoint(m_db->getSetting("pos_x", QString::number(defaultX)).toInt(),
-                  m_db->getSetting("pos_y", QString::number(defaultY)).toInt());
+    QString sx = m_db->getSetting("pos_x", "");
+    QString sy = m_db->getSetting("pos_y", "");
+    bool okX = false, okY = false;
+    int x = sx.toInt(&okX); int y = sy.toInt(&okY);
+    return QPoint(okX ? x : defaultX, okY ? y : defaultY);
 }
-
-#include <QCursor>
-#include <QCoreApplication>
 QPoint AppController::getCursorPos() { return QCursor::pos(); }
 void AppController::quitApp() { QCoreApplication::quit(); }
 
