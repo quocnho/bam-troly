@@ -1,76 +1,79 @@
 import QtQuick
 import "mascot"
+import "mascot/behaviors"
 import "chat"
-import "common"
-
-import "menu"
 
 Window {
-    id: dogWindow
-    property var appController: null
-    property bool isPinned: true
-    property bool syncingWinPos: false
-    property bool initialized: false
+    id: assistantWindow
+    property var appController: null; property bool isPinned: true
+    property bool initialized: false; property bool isMovingDog: false
+    readonly property bool isExpanded: !!(appController && appController.isExpanded)
 
-    visible: true; width: 116; height: 116; color: "transparent"
-    flags: isPinned ? (Qt.Window | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
-                    : (Qt.Window | Qt.FramelessWindowHint)
+    visible: true; color: "transparent"
+    width: isExpanded ? 400 : 126; height: isExpanded ? 706 : 116
+    flags: isPinned ? (Qt.Tool | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
+                    : (Qt.Tool | Qt.FramelessWindowHint)
 
-    Timer { id: savePosTimer; interval: 350; repeat: false; onTriggered: if (appController) appController.savePosition(dogWindow.x, dogWindow.y) }
-    onXChanged: {
-        if (initialized) savePosTimer.restart();
-        if (chatWin && chatWin.visible && !syncingWinPos) chatWin.realignToDog();
-        if (menuWin && menuWin.visible) menuWin.realignToDog();
+    Timer { id: savePosTimer; interval: 400; repeat: false; onTriggered: if (appController && initialized && !isMovingDog) appController.savePosition(x, y + (isExpanded ? 590 : 0)) }
+    onXChanged: if (initialized && !isMovingDog) savePosTimer.restart()
+    onYChanged: if (initialized && !isMovingDog) savePosTimer.restart()
+
+    onIsExpandedChanged: {
+        if (!initialized) return
+        var sW = Screen.desktopAvailableWidth > 0 ? Screen.desktopAvailableWidth : Screen.width
+        var sH = Screen.desktopAvailableHeight > 0 ? Screen.desktopAvailableHeight : Screen.height
+        if (isExpanded) {
+            y = Math.max(12, y - 590); x = Math.max(12, Math.min(sW - 412, x - 274))
+            Qt.callLater(chatPanel.focusInput)
+        } else { y = Math.min(sH - 128, y + 590); x = Math.min(sW - 138, x + 274); }
     }
-    onYChanged: {
-        if (initialized) savePosTimer.restart();
-        if (chatWin && chatWin.visible && !syncingWinPos) chatWin.realignToDog();
-        if (menuWin && menuWin.visible) menuWin.realignToDog();
-    }
 
-    function updateDogPos() {
-        var sW = Screen.desktopAvailableWidth > 0 ? Screen.desktopAvailableWidth : Screen.width;
-        var sH = Screen.desktopAvailableHeight > 0 ? Screen.desktopAvailableHeight : Screen.height;
-        var defX = sW - width - 24; var defY = sH - height - 24;
+    function updateWindowPos() {
+        var sW = Screen.desktopAvailableWidth > 0 ? Screen.desktopAvailableWidth : Screen.width
+        var sH = Screen.desktopAvailableHeight > 0 ? Screen.desktopAvailableHeight : Screen.height
+        var defX = sW - 150; var defY = sH - 140
         if (appController) {
-            var p = appController.getSavedPosition(defX, defY);
-            x = Math.max(0, Math.min(sW - width, p.x)); y = Math.max(0, Math.min(sH - height, p.y));
+            var p = appController.getSavedPosition(defX, defY)
+            x = (p.x <= 10 || p.x > sW - 126) ? defX : p.x
+            y = (p.y <= 10 || p.y > sH - 116) ? defY : p.y
         } else { x = defX; y = defY; }
-        initialized = true;
+        initialized = true
     }
-    Component.onCompleted: { updateDogPos(); mascotDog.wakeUp(); }
-    Screen.onWidthChanged: updateDogPos(); Screen.onHeightChanged: updateDogPos()
+    Component.onCompleted: { updateWindowPos(); dogHost.wakeUp(); }
 
-    Shortcut { sequence: "s"; onActivated: mascotDog.setDogState("sleeping") }
-    Shortcut { sequence: "w"; onActivated: mascotDog.wakeUp() }
+    ChatPanel {
+        id: chatPanel; anchors.top: parent.top; anchors.horizontalCenter: parent.horizontalCenter
+        visible: assistantWindow.isExpanded; appController: assistantWindow.appController
+        hostWindow: assistantWindow; isPinned: assistantWindow.isPinned
+        onPinToggled: assistantWindow.isPinned = !assistantWindow.isPinned
+    }
 
-    DogMascotHost {
-        id: mascotDog; anchors.fill: parent; targetWindow: dogWindow
-        appController: dogWindow.appController
-        onRequestShowMenu: menuWin.openMenu()
-        onHoverExited: menuWin.scheduleClose(650)
-        onDogStateChanged: if ((dogState === "lying" || dogState === "sleeping") &&
-                               appController && appController.isExpanded) appController.isExpanded = false
-        onClicked: if (appController) {
-            menuWin.closeMenu()
-            appController.isExpanded = !appController.isExpanded
-            if (appController.isExpanded) Qt.callLater(chatWin.focusInput)
+    Item {
+        id: mascotAnchorArea; width: 126; height: 116
+        anchors.bottom: parent.bottom; anchors.right: parent.right
+        HoverHandler {
+            onHoveredChanged: if (hovered) { hideTimer.stop(); actionBar.isVisible = true; } else hideTimer.restart()
+        }
+        Timer { id: hideTimer; interval: 450; repeat: false; onTriggered: actionBar.isVisible = false }
+
+        DogMascotHost {
+            id: dogHost; width: 116; height: 116; targetWindow: assistantWindow
+            appController: assistantWindow.appController
+            onClicked: if (assistantWindow.isMovingDog) assistantWindow.isMovingDog = false;
+                       else if (appController) appController.isExpanded = !appController.isExpanded
+        }
+
+        MascotActionBar {
+            id: actionBar; x: 96; anchors.verticalCenter: dogHost.verticalCenter
+            isDragArmed: assistantWindow.isMovingDog
+            onTriggerDrag: assistantWindow.isMovingDog = !assistantWindow.isMovingDog
+            onTriggerSettings: if (appController) appController.isExpanded = !appController.isExpanded
+            onTriggerExit: if (appController) appController.quitApp(); else Qt.quit()
         }
     }
 
-    FloatingChatWindow {
-        id: chatWin
-        visible: !!(appController && appController.isExpanded)
-        appController: dogWindow.appController
-        dogWindow: dogWindow
-        isPinned: dogWindow.isPinned
-        onPinToggled: dogWindow.isPinned = !dogWindow.isPinned
-    }
-
-    RadialMenuWindow {
-        id: menuWin
-        dogWindow: dogWindow
-        appController: dogWindow.appController
-        onActionSelected: (act) => console.log("[Bam Menu] Selected:", act)
+    MascotFollowMover {
+        targetWindow: assistantWindow; appController: assistantWindow.appController
+        isMoving: assistantWindow.isMovingDog
     }
 }

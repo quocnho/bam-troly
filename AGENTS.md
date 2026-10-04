@@ -1,16 +1,13 @@
 # Bam Trợ Lý (bam-troly) Architecture & Context Map
 
-> **Dành cho AI Assistants (Gemini, Claude, GPT, Antigravity, Cursor, Zed):**
-> Đọc tài liệu này trước để định tuyến trực tiếp đến đúng file cần sửa.
-> Tuân thủ nghiêm ngặt **Clean Architecture, Atomic Micro-Modules (< 80 dòng/file QML/Nix, < 100 dòng/file C++)** và **Quy trình Refine/Reframe Prompt**.
+> **Chỉ thị AI Assistant:**
+> Đọc tài liệu này để định tuyến file. Tuân thủ **Clean Architecture, Micro-Modules (< 80 dòng QML/Nix, < 100 dòng C++)**, **Refine Prompt siêu ngắn gọn** và **Targeted Reading** để tiết kiệm tối đa token.
 
-## 1. Cơ Chế Bắt Buộc: Refine & Reframe Prompt Chuyên Gia Hàng Đầu
-Mỗi khi nhận yêu cầu từ người dùng, AI Agent PHẢI:
-1. **Đọc hiểu & Phân tích chuyên sâu**: Đóng vai trò Chuyên gia Hàng đầu Thế giới trong lĩnh vực liên quan để đối chuẩn công nghệ và giải pháp tối ưu.
-2. **Refine & Reframe thành Kế hoạch chi tiết**: Trình bày dưới dạng User Story, phân rã công việc (Tasks), phạm vi tác động (Scope & Affected Components) và Tiêu chuẩn nghiệm thu (DoD).
-3. **Cổng Xác Nhận (Confirmation Gate)**: BẮT BUỘC gửi kế hoạch chi tiết cho người dùng xem và xin xác nhận. Chỉ tiến hành sửa đổi mã nguồn hoặc can thiệp hệ thống sau khi nhận được sự đồng ý.
+## 1. Cổng Xác Nhận Siêu Ngắn Gọn (Compact Confirmation Gate)
+- Lập kế hoạch ngắn gọn (Mục tiêu, Nhánh Git, Tasks, Affected Files, DoD) theo [.agents/skills/troly-prompt-refiner/SKILL.md](file:///home/quocnho/Projects/Bam/BamApps/bam-troly/.agents/skills/troly-prompt-refiner/SKILL.md).
+- BẮT BUỘC chờ người dùng xác nhận trước khi sửa mã nguồn.
 
-## 2. Directory Structure Map (Clean Architecture)
+## 2. Directory Structure Map
 
 ```text
 bam-troly/
@@ -25,83 +22,22 @@ bam-troly/
 │   └── skills/                       # Kỹ năng định tuyến, AI resilience, reframing
 ├── src/
 │   ├── main.cpp                      # Khởi tạo QGuiApplication & QML Engine (< 40 dòng)
-│   ├── core/                         # Domain Layer: Thực thể & Kiểu dữ liệu
-│   │   ├── types.hpp                 # MessageRole, AgentStatus (< 30 dòng)
-│   │   └── message.hpp               # Message struct entity (< 30 dòng)
-│   ├── workflow/                     # Use Cases Layer: Quy trình & Hành vi
-│   │   ├── agent_workflow.hpp        # ReAct Pipeline interface (< 40 dòng)
-│   │   └── agent_workflow.cpp        # Điều phối Reasoning, Tool Call, Reply (< 45 dòng)
-│   ├── plugins/                      # Plugins Layer: Mở rộng hành vi & Công cụ
-│   │   ├── plugin_interface.hpp      # IAgentTool interface (< 20 dòng)
-│   │   ├── tool_registry.hpp         # ToolRegistry header (< 30 dòng)
-│   │   ├── tool_registry.cpp         # Quản lý & gọi tools (< 40 dòng)
-│   │   └── builtins/                 # Các tools mặc định (System, Memory)
-│   ├── modules/                      # Infrastructure Layer: Modules kỹ thuật
-│   │   ├── ai/                       # AI Engine & Providers
-│   │   │   ├── ai_provider.hpp       # IAIProvider interface (< 25 dòng)
-│   │   │   ├── llama_engine.hpp      # llama.cpp RAII header (< 30 dòng)
-│   │   │   └── llama_engine.cpp      # llama.cpp worker thread (< 60 dòng)
-│   │   └── storage/                  # Lưu trữ CSDL
-│   │       ├── db_manager.hpp        # SQLite3 WAL + FTS5 header (< 30 dòng)
-│   │       └── db_manager.cpp        # SQLite3 queries & mutations (< 75 dòng)
-│   └── presentation/                 # Presentation Layer: Controllers & ViewModel
-│       ├── app_controller.hpp        # Qt ViewModel kết nối QML <-> Workflow (< 40 dòng)
-│       └── app_controller.cpp        # Signals/slots & UI handlers (< 60 dòng)
+│   ├── core/                         # Domain: Types & Message entities (< 30 dòng)
+│   ├── workflow/                     # Use Cases: ReAct agent workflow (< 45 dòng)
+│   ├── plugins/                      # Plugins: Tool registry & builtins (< 40 dòng)
+│   ├── modules/                      # Infra: ai (llama.cpp) & storage (sqlite3) (< 75 dòng)
+│   └── presentation/                 # ViewModel: app_controller (< 60 dòng)
 └── qml/                              # UI Layer: Qt6 Quick (Clean Architecture)
-    ├── Main.qml                      # Cửa sổ trong suốt, Frameless, DragHandler (< 80 dòng)
-    ├── mascot/                       # Chức năng Linh vật & Hành vi (Mascot Feature)
-    │   ├── DogMascotHost.qml         # Host kết nối tương tác và chuyển động Mascot (< 50 dòng)
-    │   ├── parts/                    # Các bộ phận độc lập (Rig Parts)
-    │   │   ├── DogEyes.qml           # Mắt lúng liếng, đảo mắt, chớp mắt, catchlight (< 75 dòng)
-    │   │   ├── DogEars.qml           # Tai vểnh, tai mềm giật nhẹ/cụp khi ngủ (< 55 dòng)
-    │   │   ├── DogMouth.qml          # Mõm, mũi đen và lưỡi hồng rung nhịp (< 50 dòng)
-    │   │   ├── DogTail.qml           # Đuôi xoắn vẫy tốc độ cao uốn lượn (< 65 dòng)
-    │   │   ├── DogTorso.qml          # Thân mình, ngực phồng, đốm lưng, chân trước (< 80 dòng)
-    │   │   ├── DogNameTag.qml        # Bảng tên BamOS treo tự nhiên, thích ứng tư thế (< 75 dòng)
-    │   │   ├── DogHeadAssembly.qml   # Lắp ráp hộp sọ, tai, mắt, mõm và má hồng (< 55 dòng)
-    │   │   └── DogSideWalk.qml       # Chân chuyển động lúp xúp sang bên (< 65 dòng)
-    │   └── behaviors/                # Quy trình & Luồng hành vi hoạt họa (Behaviors & Flows)
-    │       ├── DogRigMascot.qml      # Điều phối chuyển động đa tầng 12 Disney (< 75 dòng)
-    │       ├── BarkAnimationFlow.qml # Timeline sủa gâu (ngực phồng, ngửa đầu, co người) (< 45 dòng)
-    │       ├── JumpBounceAnimationFlow.qml # Hoạt cảnh nhảy mừng rỡ cưng nựng (< 50 dòng)
-    │       ├── PlayfulBehavior.qml   # Hành vi dơ chân ngẫu nhiên khi rảnh (< 40 dòng)
-    │       ├── MascotInteractionController.qml # Quản lý Idle 3m/5m/10m & Wake (< 40 dòng)
-    │       └── IntroRunner.qml       # Hoạt cảnh chạy từ mép màn hình vào (< 35 dòng)
-    ├── chat/                         # Tính năng Khung Chat (Chat Feature)
-    │   ├── FloatingChatWindow.qml    # Cửa sổ chat nổi bám dính tọa độ Mascot (< 60 dòng)
-    │   ├── ChatWindow.qml            # Khung chat nổi 400x580 (< 60 dòng)
-    │   ├── ChatHeader.qml            # Header ghim, thu nhỏ, đóng (< 70 dòng)
-    │   ├── MessageList.qml           # Danh sách tin nhắn streaming (< 55 dòng)
-    │   ├── MessageBubble.qml         # Bong bóng chat hỗ trợ code/markdown (< 75 dòng)
-    │   ├── CodeBlockView.qml         # Hộp hiển thị code với nút copy (< 65 dòng)
-    │   ├── CopyButton.qml            # Nút copy tiện lợi kèm tooltip (< 35 dòng)
-    │   ├── ChatTooltip.qml           # Tooltip gọn gàng (< 25 dòng)
-    │   └── PromptInput.qml           # Ô nhập liệu và nút gửi/dừng (< 70 dòng)
-    ├── dialogs/                      # Hộp thoại tương tác (Dialogs)
-    │   └── ConfirmDialog.qml         # Hộp thoại xác nhận đóng & xóa chat (< 60 dòng)
-    └── common/                       # Thành phần dùng chung (Common UI Components)
-        └── StatusIndicator.qml       # Đèn trạng thái AI Idle/Streaming (< 20 dòng)
+    ├── Main.qml                      # Nền trong suốt, Frameless, DragHandler (< 80 dòng)
+    ├── mascot/                       # Mascot parts, behaviors, rigging, action bar (< 80 dòng)
+    ├── chat/                         # Floating chat, code block, bubbles, header (< 80 dòng)
+    ├── dialogs/                      # Hộp thoại xác nhận (< 60 dòng)
+    └── common/                       # Đèn trạng thái & UI dùng chung (< 30 dòng)
 ```
 
-## 3. Clean Architecture & Micro-Modules Rules
-- **Ngưỡng trần giới hạn dòng (Strict Ceiling)**:
-  - Mọi file Nix, QML, CMake: **TỐI ĐA < 80 dòng/file**. Khi đạt ~70 dòng, tách component nhỏ.
-  - Mọi file mã nguồn C++ (`.hpp`, `.cpp`): **TỐI ĐA < 100 dòng/file**.
-- **Strict FOSS & No Commercial License (100% Tự do)**:
-  - Toàn bộ dependencies C++ và Qt6 đều phải là FOSS (LGPLv3, MIT, Apache-2.0).
+## 3. Bất Biến Kỹ Thuật (Engineering Invariants)
+- **Trần dòng**: < 80 dòng/file (QML, Nix, CMake), < 100 dòng/file (C++).
+- **Tiết kiệm token**: Dùng `grep_search` và `view_file` có `StartLine`/`EndLine`. Không đọc file rác/binary.
+- **Git**: Phát triển trên `develop` hoặc feature branch. Bump `CC` (`vAA.BB.CC`) khi có tính năng/refactor lớn. Stage bằng `git add` và xin ý kiến xác nhận commit.
+- **UI & Surface Model**: Kiến trúc **Single Dynamic Window** (1 Native Surface duy nhất co giãn kích thước động giữa Mascot và Chat/Tab Panels; nghiêm cấm tách nhiều Window độc lập hoặc dùng Fullscreen đục lỗ gây hao hụt VRAM và lỗi Wayland input protocol). Frameless, kéo thả Wayland, `llama.cpp` tách riêng luồng `std::jthread`, UI 60fps, 100% FOSS.
 
-## 4. UI & Floating Agent Invariants
-- **Frameless, Transparent & Drag-and-Drop**:
-  - Giao diện nền trong suốt (`color: "transparent"`), không viền, `Qt.WindowStaysOnTopHint`.
-  - Hỗ trợ kéo thả tự do trên Wayland (BamOS) và Windows qua `DragHandler` + `startSystemMove()`.
-  - Tự động co giãn mượt mà: Linh vật chờ <--> Khung chat / thông báo (400x580).
-- **Bulkhead Pattern (Cô lập tài nguyên)**:
-  - Tách hoàn toàn việc suy luận AI (`llama.cpp`) sang luồng nền (`std::jthread`).
-  - Truyền token streaming qua Qt Signal/Slot (`Qt::QueuedConnection`) để UI luôn mượt 60fps.
-
-## 5. Token Saving & Git Workflow
-- **Targeted Reading**: Sử dụng `grep_search` và `view_file` với `StartLine`/`EndLine` cụ thể.
-- **Không đọc**: `build/`, `.direnv/`, `.devenv/`, file nhị phân, model file `.gguf`, file `.db`.
-- **Versioning Standard**: `AA.BB.CC` (ví dụ: `v26.01.01`).
-- **Nhánh Git**: `develop` (dev chính), `main` (release có Git tag).
-- **Commit**: Conventional Commits (`feat(...)`, `fix(...)`, `refactor(...)`, `perf(...)`, `chore(...)`).

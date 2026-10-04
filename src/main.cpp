@@ -17,6 +17,11 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    // Default to Vulkan hardware RHI backend on Wayland/Linux when not overridden
+    if (!qEnvironmentVariableIsSet("QSG_RHI_BACKEND")) {
+        qputenv("QSG_RHI_BACKEND", "vulkan");
+    }
+
     QGuiApplication app(argc, argv);
     app.setApplicationName("bam-troly");
     app.setOrganizationName("BamOS");

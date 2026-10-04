@@ -1,11 +1,11 @@
 ---
-name: bamos-ecosystem-routing
-description: Định tuyến subsystem theo tiền tố shorthand (?bamos, ?customizer, ?notes, ?installer, ?nvim) hoặc @subsystem trong prompt của User để tự động nạp đúng ngữ cảnh và phân quyền tác vụ.
+name: troly-ecosystem-routing
+description: Định tuyến ngữ cảnh subsystem theo tiền tố shorthand (?troly, ?os, ?customizer, ?notes) trong hệ sinh thái BamOS.
 ---
 
-# BamOS Ecosystem Subsystem Routing Skill
+# Bam Trợ Lý Ecosystem Subsystem Routing Skill
 
-Quy chuẩn điều hướng và nạp ngữ cảnh cho AI Agent khi nhận yêu cầu có tiền tố chỉ định subsystem trong hệ sinh thái BamOS:
+Quy chuẩn điều hướng và nạp ngữ cảnh khi nhận yêu cầu có tiền tố chỉ định subsystem:
 
 ## 1. Bảng Tra Cứu Tiền Tố Subsystem (?prefix)
 
@@ -23,9 +23,6 @@ Khi User bắt đầu prompt bằng tiền tố `?<subsystem>:`, `@<subsystem>:`
 | `?audio` | PipeWire & Audio | [BamOS/modules/audio/](file:///home/quocnho/Projects/Bam/BamOS/modules/audio) | PipeWire, WirePlumber, Rnnoise |
 
 ## 2. Quy Trình Xử Lý Tự Động
-1. **Cô Lập Ngữ Cảnh (Context Isolation)**:
-   - Toàn bộ thao tác đọc (`view_file`), tìm kiếm (`grep_search`), sửa file và chạy lệnh chỉ tập trung trong thư mục subsystem đích.
-2. **Kích Hoạt Tiêu Chuẩn Riêng**:
-   - Tuân thủ file cấu hình hoặc `AGENTS.md` tương ứng của subsystem đó.
-3. **Phản Hồi Trực Quan**:
-   - Gắn nhãn xác nhận ở đầu câu trả lời: `[Target: BamOS/<subsystem>]` trước khi phân tích và thực thi.
+1. **Cô Lập Ngữ Cảnh**: Chỉ thao tác và tìm kiếm trong thư mục mục tiêu.
+2. **Kích Hoạt Tiêu Chuẩn Riêng**: Tuân thủ [AGENTS.md](file:///home/quocnho/Projects/Bam/BamApps/bam-troly/AGENTS.md) và các file rule của subsystem đó.
+3. **Phản Hồi Trực Quan**: Gắn nhãn `[Target: BamApps/bam-troly]` hoặc subsystem tương ứng ở đầu câu trả lời.

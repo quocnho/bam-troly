@@ -1,32 +1,28 @@
 # Bam Trợ Lý Agent Rules & Conventions
 
-Quy tắc bắt buộc dành cho mọi AI Agent (Gemini, Claude, GPT, Antigravity, Cursor, Zed) khi làm việc trong dự án **bam-troly**:
+Quy tắc bắt buộc dành cho mọi AI Agent khi làm việc trong dự án **bam-troly**:
 
-## 1. Cơ Chế Bắt Buộc: Prompt Refinement & Chuyên Gia Đối Chuẩn
-Khi nhận được yêu cầu từ người dùng:
-1. **Đọc hiểu & Phân tích chuyên sâu (Top-tier Domain Expert)**:
-   - Nghiên cứu công nghệ, đối chuẩn giải pháp tối ưu theo chuẩn quốc tế.
-2. **Refine & Reframe thành Kế hoạch chi tiết**:
-   - Chuyển hóa yêu cầu thành User Story chuẩn mực, phân rã danh sách Tasks kỹ thuật, làm rõ phạm vi (Scope) và tiêu chí nghiệm thu (DoD).
-3. **Cổng Xác Nhận Bắt Buộc (Confirmation Gate)**:
-   - Xuất trình bản kế hoạch chi tiết và xin ý kiến xác nhận của người dùng.
-   - CHỈ bắt đầu sửa đổi mã nguồn sau khi người dùng đồng ý.
+## 1. Giới Hạn Dòng (Strict Ceiling)
+- **QML, Nix, CMake**: Tối đa **< 80 dòng/file**. Đạt ~70 dòng phải tách component con.
+- **C++ (`.hpp`, `.cpp`)**: Tối đa **< 100 dòng/file**. Tách biệt structs, logic và workers.
 
-## 2. Giới Hạn Dòng Mã Nguồn (Strict File Line Ceiling)
-- **File Nix, QML, CMake**: Tối đa **< 80 dòng/file**. Khi đạt ~70 dòng, chủ động tách component con.
-- **File C++ (`.hpp`, `.cpp`)**: Tối đa **< 100 dòng/file**. Tách nhỏ class, helpers, workers.
-- **Tuyệt đối không gộp**: Giữ nguyên tính độc lập của từng bộ phận (Parts, Behaviors, Views, Controllers).
+## 2. Token-Saving & Targeted Reading
+- Không đọc toàn bộ file dài; dùng `grep_search` và `view_file` với `StartLine`/`EndLine`.
+- Cấm đọc file rác: `build/`, `.direnv/`, `.devenv/`, `*.gguf`, `*.db`.
+- Tối giản phản hồi: Không nói dông dài, dùng khung Compact Plan ở [troly-prompt-refiner](file:///home/quocnho/Projects/Bam/BamApps/bam-troly/.agents/skills/troly-prompt-refiner/SKILL.md).
 
-## 3. Bản Quyền & Triết Lý Phần Mềm Tự Do (Strict 100% FOSS)
-- Chỉ sử dụng các thư viện, component, fonts có giấy phép mã nguồn mở tự do (MIT, LGPLv3, Apache-2.0, SIL OFL).
-- Không đưa vào bất kỳ dependency thương mại hoặc đóng mã nguồn nào.
+## 3. Quy Trình Refine Prompt & Cổng Xác Nhận
+- Tiếp nhận yêu cầu -> Lập kế hoạch kỹ thuật cô đọng (Compact Plan) -> Chờ người dùng xác nhận trước khi sửa mã nguồn.
 
-## 4. UI Invariants & Bulkhead Architecture
-- Cửa sổ trong suốt, frameless, `Qt.WindowStaysOnTopHint`.
-- Kéo thả tự do qua `DragHandler` + `startSystemMove()`.
-- Tách biệt luồng AI inference (`llama.cpp`) sang background thread (`std::jthread`), truyền dữ liệu về UI qua Qt Signal/Slot (`Qt::QueuedConnection`) để UI luôn mượt mà 60fps.
+## 4. Git Invariants
+- Phát triển trên `develop` hoặc feature branch (`feat/troly-...`, `fix/...`, `refactor/...`). Không sửa trực tiếp trên `main`.
+- Nâng `CC` (`vAA.BB.CC`) khi có tính năng/refactor lớn.
+- Chủ động `git add`, soạn commit What-Why-How và hỏi xác nhận từ người dùng trước khi commit.
 
-## 5. Thao Tác Thư Viện & Tiết Kiệm Token (Token Conservation)
-- Sử dụng `grep_search` và `view_file` có dòng bắt đầu/kết thúc (`StartLine`/`EndLine`).
-- Không quét hoặc mở các thư mục cấm: `build/`, `.direnv/`, `.devenv/`, model `.gguf`, database `.db`.
-- Dùng `replace_file_content` hoặc `multi_replace_file_content` cho các chỉnh sửa vi phẫu (surgical edits).
+## 5. UI & Architecture Invariants
+- **Mô hình Surface**: Bắt buộc **Single Dynamic Window** (1 Native Window duy nhất, co giãn geometry linh hoạt). Cấm tạo nhiều Window con độc lập và cấm dùng Window fullscreen đục lỗ (input mask) để tránh lỗi Wayland input protocol và lãng phí VRAM.
+- Nền trong suốt, frameless, `Qt.WindowStaysOnTopHint`, kéo thả bằng `DragHandler` + `startSystemMove()`.
+- AI Inference (`llama.cpp`) chạy trên `std::jthread`, truyền token qua Qt Signal/Slot (non-blocking UI 60fps).
+- Đồ họa nhân vật: Skeletal hierarchy, spring physics, Draw Calls <= 2.
+- 100% FOSS: Giấy phép tự do (MIT, LGPLv3, Apache-2.0).
+

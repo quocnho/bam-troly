@@ -6,11 +6,10 @@ Item {
     width: 116; height: 116
     readonly property alias dogState: controller.dogState
     property var targetWindow: null; property var appController: null
-    signal clicked(); signal requestShowMenu(); signal hoverExited()
+    signal clicked(); signal hoverEntered(); signal hoverExited(); signal showTime()
 
     function setDogState(state) { controller.dogState = state }
     function wakeUp() { controller.triggerWakeAndBark() }
-    function showMenu() { mascotHostRoot.requestShowMenu(); rig.jumpAndBounce(); }
 
     MascotInteractionController { id: controller; mascotRig: rig }
     PlayfulBehavior { mascotRig: rig; dogState: controller.dogState }
@@ -24,23 +23,20 @@ Item {
         }
     }
 
-    // Theo dõi chuột toàn màn hình (Global mouse tracking gaze)
-    Timer {
-        interval: 50; repeat: true
-        running: controller.dogState !== "sleeping" && controller.dogState !== "lying" && mascotHostRoot.appController !== null
-        onTriggered: {
-            if (mouseArea.containsMouse || !mascotHostRoot.targetWindow) return;
-            var pos = mascotHostRoot.appController.getCursorPos();
-            var winX = mascotHostRoot.targetWindow.x + mascotHostRoot.width / 2;
-            var winY = mascotHostRoot.targetWindow.y + mascotHostRoot.height / 2;
-            rig.gazeX = Math.max(-2.5, Math.min(2.5, (pos.x - winX) / 280.0 * 2.5));
-            rig.gazeY = Math.max(-2.0, Math.min(2.0, (pos.y - winY) / 220.0 * 2.0));
-            rig.isTrackingMouse = true;
-        }
-    }
-
     DogRigMascot {
         id: rig; anchors.fill: parent; dogState: controller.dogState; isHovered: mouseArea.containsMouse
+        springEarL: mascotHostRoot.appController?.physics?.earAngleL ?? 0
+        springEarR: mascotHostRoot.appController?.physics?.earAngleR ?? 0
+        springTail: mascotHostRoot.appController?.physics?.tailAngle ?? 0
+        springTag: mascotHostRoot.appController?.physics?.nameTagAngle ?? 0
+        physicsSquashX: mascotHostRoot.appController?.physics?.squashX ?? 1.0
+        physicsSquashY: mascotHostRoot.appController?.physics?.squashY ?? 1.0
+    }
+
+    MascotWindowTracker {
+        targetWindow: mascotHostRoot.targetWindow
+        appController: mascotHostRoot.appController
+        rig: rig
     }
 
     DragHandler {
@@ -66,8 +62,8 @@ Item {
             rig.gazeX = Math.max(-2.5, Math.min(2.5, dx * 2.5)); rig.gazeY = Math.max(-2.0, Math.min(2.0, dy * 2.0));
             rig.isTrackingMouse = true;
         }
-        onEntered: { lastX = -1; lastY = -1; rig.isTrackingMouse = true; if (controller.dogState === "active") hoverFlow.triggerHoverFlow(); mascotHostRoot.showMenu(); }
+        onEntered: { lastX = -1; lastY = -1; rig.isTrackingMouse = true; if (controller.dogState === "active") hoverFlow.triggerHoverFlow(); mascotHostRoot.hoverEntered(); }
         onExited: { lastX = -1; lastY = -1; rig.isTrackingMouse = false; rig.gazeX = 0; rig.gazeY = 0; controller.handleMouseLeave(); mascotHostRoot.hoverExited(); }
-        onClicked: (mouse) => mouse.button === Qt.RightButton ? mascotHostRoot.showMenu() : (controller.triggerWakeAndBark(), rig.jumpAndBounce(), mascotHostRoot.clicked())
+        onClicked: (mouse) => { controller.triggerWakeAndBark(); rig.jumpAndBounce(); mascotHostRoot.clicked(); }
     }
 }

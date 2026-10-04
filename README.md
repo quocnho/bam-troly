@@ -21,10 +21,14 @@ Hỗ trợ cả 2 chế độ: **Bản Lite Offline** (nhúng trực tiếp `lla
   - **Khởi động**: Chạy từ góc màn hình ra, dừng lại vẫy đuôi mừng rỡ và sủa *"Gâu! 🐾"* dứt khoát.
   - **Trạng thái Nghỉ (Idle State Machine)**: Sau 3 phút ngồi quan sát; sau 5 phút nằm mở mắt vẩy tai; sau 10 phút chìm vào giấc ngủ với bóng ngủ `💤`.
   - **Đánh thức & Chat**: Click chuột vào chú chó sẽ bật dậy và khung chat nổi lên ngay trên đầu.
-- **Khung Chat Chuyên Nghiệp**:
+- **Khung Chat Chuyên Nghiệp & Tab Panels**:
   - Hỗ trợ hiển thị Code Blocks (`CodeBlockView.qml`) kèm nút copy 1 chạm và tooltip phản hồi nhanh.
   - Phân tách bong bóng chat người dùng & trợ lý rõ ràng (`MessageBubble.qml`).
-- **Kiến trúc**: Clean Architecture gom theo tính năng/hành vi & Micro-Modules (< 80 dòng QML, < 100 dòng C++).
+  - Hỗ trợ mở rộng các Drawer/Tab Panels (Chat, Settings, Model Manager) linh hoạt trên cùng một khung vẽ.
+- **Kiến trúc Single Dynamic Window**: 
+  - Chỉ sử dụng **1 Native OS Window duy nhất** có kích thước co giãn động theo trạng thái (thu nhỏ 126x116 ôm sát Mascot, mở rộng khi bật Chat/Tabs).
+  - Tối ưu VRAM (<15MB) và băng thông GPU, không gây xung đột Input Mask trên Linux Wayland, đồng bộ 100% Scene Graph 60fps.
+  - Clean Architecture gom theo tính năng/hành vi & Micro-Modules (< 80 dòng QML, < 100 dòng C++).
 
 ## 2. Phát triển & Biên dịch Cục bộ (devenv)
 Sử dụng môi trường Nix thông qua `direnv` hoặc `devenv`:
@@ -75,6 +79,7 @@ Khi cài đặt qua Nix derivation, ứng dụng sẽ tự động sinh file des
   - **Không (Giữ)**: Giữ nguyên lịch sử hội thoại và thoát ứng dụng.
   - **Hủy**: Đóng hộp thoại và tiếp tục sử dụng trợ lý.
 
-## 5. Quy Chuẩn AI Agent & Refine Prompt
-- **Quy tắc Agent**: Toàn bộ AI Agent đều tự động tuân thủ `.agents/rules/troly_rules.md` và `.agents/skills/troly-prompt-refiner/SKILL.md`.
-- **Refine & Reframe Prompt**: Mọi yêu cầu đưa vào đều được tinh chỉnh, cấu trúc hóa thành bản đặc tả kỹ thuật rõ ràng trước khi sửa mã nguồn.
+## 5. Quy Chuẩn AI Agent & Tiết Kiệm Token
+- **Quy tắc & Kỹ năng**: Tự động tuân thủ [.agents/rules/troly_rules.md](file:///.agents/rules/troly_rules.md) và [.agents/skills/troly-prompt-refiner/SKILL.md](file:///.agents/skills/troly-prompt-refiner/SKILL.md).
+- **Quy trình Tối ưu Token**: Áp dụng Compact Confirmation Gate, đọc vi phẫu (Targeted Reading) và sửa vi phẫu (Surgical Edits) để tối ưu hoá tốc độ và chi phí token.
+

@@ -1,12 +1,14 @@
 #include "app_controller.hpp"
 #include "modules/ai/llama_engine.hpp"
+#include "modules/graphics/mascot_physics.hpp"
 #include "plugins/builtins/memory_tool.cpp"
 
 #include <QProcess>
 
 AppController::AppController(QObject *parent)
     : QObject(parent),
-      m_db(std::make_shared<DbManager>()) {
+      m_db(std::make_shared<DbManager>()),
+      m_physics(new MascotPhysics(this)) {
 
     m_db->initDatabase();
 
@@ -15,12 +17,8 @@ AppController::AppController(QObject *parent)
     if (!savedTheme.isEmpty()) {
         m_isDarkTheme = (savedTheme == "dark");
     } else {
-        QProcess p;
-        p.start("gsettings", {"get", "org.gnome.desktop.interface", "color-scheme"});
-        if (p.waitForFinished(500)) {
-            QString out = QString::fromUtf8(p.readAllStandardOutput()).trimmed();
-            m_isDarkTheme = !out.contains("prefer-light");
-        }
+        QProcess p; p.start("gsettings", {"get", "org.gnome.desktop.interface", "color-scheme"});
+        if (p.waitForFinished(500)) m_isDarkTheme = !QString::fromUtf8(p.readAllStandardOutput()).contains("prefer-light");
     }
 
     auto ai = std::make_shared<LlamaEngine>();
@@ -39,6 +37,10 @@ AppController::AppController(QObject *parent)
         emit messageCompleted(reply);
     });
 }
+
+AppController::~AppController() = default;
+
+QObject* AppController::physics() const { return m_physics; }
 
 void AppController::setExpanded(bool expanded) {
     if (m_isExpanded != expanded) {
@@ -85,7 +87,9 @@ QPoint AppController::getSavedPosition(int defaultX, int defaultY) {
 }
 
 #include <QCursor>
+#include <QCoreApplication>
 QPoint AppController::getCursorPos() { return QCursor::pos(); }
+void AppController::quitApp() { QCoreApplication::quit(); }
 
 void AppController::toggleDesktopTheme() {
     m_isDarkTheme = !m_isDarkTheme;

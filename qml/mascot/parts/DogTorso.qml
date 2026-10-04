@@ -3,8 +3,9 @@ import QtQuick
 Item {
     id: torsoRoot
     property string dogState: "active"; property bool isBarking: false
-    property real chestPuff: 1.0; property real squashY: 1.0; property real legStride: 0
-    property real legLiftLeft: 0; property real legLiftRight: 0
+    property real chestPuff: 1.0; property real squashY: 1.0; property real squashX: 1.0
+    property real legStride: 0; property real legLiftLeft: 0; property real legLiftRight: 0
+    property real springTailAngle: 0
     width: 80; height: 54
 
     SequentialAnimation {
@@ -15,8 +16,7 @@ Item {
 
     // 1. Chân sau (Hind legs - màu tối đậm tạo bóng khối chân thực)
     Row {
-        anchors.horizontalCenter: torsoRect.horizontalCenter
-        anchors.bottom: torsoRect.bottom; anchors.bottomMargin: -2; z: -2
+        anchors.horizontalCenter: torsoRect.horizontalCenter; anchors.bottom: torsoRect.bottom; anchors.bottomMargin: -2; z: -2
         spacing: torsoRoot.dogState === "lying" || torsoRoot.dogState === "sleeping" ? 34 : (torsoRoot.dogState === "sitting" ? 28 : 22)
         visible: torsoRoot.dogState !== "intro"
         Repeater {
@@ -32,7 +32,7 @@ Item {
 
     // 2. Khớp đuôi
     DogTail {
-        dogState: torsoRoot.dogState; isBarking: torsoRoot.isBarking
+        dogState: torsoRoot.dogState; isBarking: torsoRoot.isBarking; springAngle: torsoRoot.springTailAngle
         anchors.bottom: torsoRect.bottom; anchors.right: torsoRect.left; z: -1
         anchors.rightMargin: torsoRoot.dogState === "sleeping" ? -9 : -12
         anchors.bottomMargin: torsoRoot.dogState === "sleeping" ? 6 : (torsoRoot.dogState === "sitting" ? 8 : 12)
@@ -41,7 +41,7 @@ Item {
     // 3. Thân mình với đốm ngực chuyển mờ tự nhiên in chữ BAM đen xám
     Rectangle {
         id: torsoRect
-        width: torsoRoot.dogState === "lying" || torsoRoot.dogState === "sleeping" ? 37 : (torsoRoot.dogState === "sitting" ? 44 : 40)
+        width: (torsoRoot.dogState === "lying" || torsoRoot.dogState === "sleeping" ? 37 : (torsoRoot.dogState === "sitting" ? 44 : 40)) * torsoRoot.squashX
         height: (torsoRoot.dogState === "lying" || torsoRoot.dogState === "sleeping" ? 30 : (torsoRoot.dogState === "sitting" ? 34 : 38)) * torsoRoot.squashY
         radius: torsoRoot.dogState === "lying" || torsoRoot.dogState === "sleeping" ? 14 : 16
         color: "#E59866"; border.color: "#A04000"; border.width: 1.2

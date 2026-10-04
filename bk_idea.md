@@ -41,3 +41,10 @@ Lưu trữ lịch sử các ý tưởng đã được người dùng xác nhận
 - **Mô tả:** Thiết kế linh vật chú chó ngộ nghĩnh, đáng yêu, có hồn áp dụng 12 Nguyên tắc Hoạt họa Disney (Squash & Stretch, Secondary Action, Overlapping Action, Timing & Spacing, Appeal). Tích hợp kịch bản hoạt cảnh khởi động chạy từ góc màn hình ra vẫy đuôi chào, Idle State Machine theo các mốc thời gian: 3 phút ngồi quan sát, 5 phút nằm mở mắt vẩy tai lắng nghe, 10 phút chìm vào giấc ngủ kèm nhịp thở và bong bóng Zzz. Click chuột đánh thức chú chó bật dậy và mở khung chat ngay trên đầu.
 - **Mục tiêu:** Tạo trải nghiệm trợ lý ảo sinh động, ấm áp, có linh hồn và phản ứng tự nhiên với người dùng.
 - **Subsystem liên quan:** `ui` (DogHead.qml, DogBody.qml, DogMascot.qml, DogInteractiveBubble.qml, IntroRunner.qml, Main.qml).
+
+### [IDEA-BAM-TROLY-20261004-01] Kiến Trúc 1 Cửa Sổ Co Giãn Động (Single Dynamic Window) & Frame/Tab Panels
+- **Thời gian tiếp nhận:** 2026-10-04 19:41
+- **Mô tả:** Chuyển đổi toàn diện từ kiến trúc 2 Cửa sổ (Mascot Window + FloatingChatWindow riêng) sang mô hình 1 Cửa sổ duy nhất co giãn kích thước động (Single Dynamic Window). Bác bỏ ý tưởng cửa sổ fullscreen đục lỗ (input mask) do ngốn băng thông/VRAM và kém tương thích trên Linux Wayland. Khi ở trạng thái nghỉ, cửa sổ ôm sát Mascot (126x116); khi mở Chat hoặc các Panel công cụ (Settings, Tabs), cửa sổ tự động mở rộng tọa độ (x, y, w, h) và tích hợp các Frame con/Tab Bar ngay trong cùng một Qt Quick Scene Graph.
+- **Mục tiêu:** Tiết kiệm tối đa VRAM/băng thông GPU, loại bỏ lệch pha giữa 2 cửa sổ trên Wayland, quản trị nội dung mở rộng như các tab trình duyệt một cách mượt mà và nhẹ nhàng.
+- **Subsystem liên quan:** `ui` (Main.qml, ChatPanel.qml, MascotActionBar.qml, AppController).
+

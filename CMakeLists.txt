@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-project(bam-troly VERSION 26.01.01 LANGUAGES CXX)
+project(bam-troly VERSION 26.01.02 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -19,6 +19,9 @@ qt_add_executable(bam-troly
     src/plugins/tool_registry.hpp
     src/modules/storage/db_manager.cpp
     src/modules/storage/db_manager.hpp
+    src/modules/graphics/mascot_physics.cpp
+    src/modules/graphics/mascot_physics.hpp
+    src/modules/graphics/mascot_kinematics_soa.hpp
     src/modules/ai/ai_provider.hpp
     src/modules/ai/llama_engine.cpp
     src/modules/ai/llama_engine.hpp
@@ -49,8 +52,9 @@ qt_add_qml_module(bam-troly
         qml/mascot/behaviors/DogEarBehavior.qml
         qml/mascot/behaviors/SleepDreamBubbleFlow.qml
         qml/mascot/behaviors/IntroRunner.qml
+        qml/mascot/behaviors/MascotWindowTracker.qml
         qml/chat/ChatWindow.qml
-        qml/chat/FloatingChatWindow.qml
+        qml/chat/ChatPanel.qml
         qml/chat/ChatHeader.qml
         qml/chat/MessageList.qml
         qml/chat/MessageBubble.qml
@@ -61,11 +65,10 @@ qt_add_qml_module(bam-troly
         qml/dialogs/ConfirmDialog.qml
         qml/common/StatusIndicator.qml
         qml/common/HourlyClockPopup.qml
-        qml/menu/RadialMenuItem.qml
-        qml/menu/RadialMenuView.qml
-        qml/menu/RadialMenuWindow.qml
+        qml/mascot/MascotActionBar.qml
+        qml/mascot/MascotActionButton.qml
+        qml/mascot/behaviors/MascotFollowMover.qml
     RESOURCES
-        qml/menu/RadialArcSolver.js
         assets/images/dog_bark.png
         assets/images/dog_run.png
         assets/images/dog_sit.png
@@ -78,12 +81,16 @@ target_include_directories(bam-troly PRIVATE src)
 
 find_package(PkgConfig QUIET)
 if (PKG_CONFIG_FOUND)
-    pkg_check_modules(LLAMA QUIET llama)
+    pkg_check_modules(LLAMA QUIET IMPORTED_TARGET llama)
 endif()
 
-if (LLAMA_FOUND)
+if (TARGET PkgConfig::LLAMA)
+    target_compile_definitions(bam-troly PRIVATE BAM_ENABLE_LLAMA=1)
+    target_link_libraries(bam-troly PRIVATE PkgConfig::LLAMA)
+elseif (LLAMA_FOUND)
     target_compile_definitions(bam-troly PRIVATE BAM_ENABLE_LLAMA=1)
     target_include_directories(bam-troly PRIVATE ${LLAMA_INCLUDE_DIRS})
+    target_link_directories(bam-troly PRIVATE ${LLAMA_LIBRARY_DIRS})
     target_link_libraries(bam-troly PRIVATE ${LLAMA_LIBRARIES})
 else()
     find_package(llama QUIET)
