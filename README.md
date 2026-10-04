@@ -75,6 +75,7 @@ Khi cài đặt qua Nix derivation, ứng dụng sẽ tự động sinh file des
   - **Không (Giữ)**: Giữ nguyên lịch sử hội thoại và thoát ứng dụng.
   - **Hủy**: Đóng hộp thoại và tiếp tục sử dụng trợ lý.
 
-## 5. Quy Chuẩn AI Agent & Refine Prompt
-- **Quy tắc Agent**: Toàn bộ AI Agent đều tự động tuân thủ `.agents/rules/troly_rules.md` và `.agents/skills/troly-prompt-refiner/SKILL.md`.
-- **Refine & Reframe Prompt**: Mọi yêu cầu đưa vào đều được tinh chỉnh, cấu trúc hóa thành bản đặc tả kỹ thuật rõ ràng trước khi sửa mã nguồn.
+## 5. Quy Chuẩn AI Agent & Tiết Kiệm Token
+- **Quy tắc & Kỹ năng**: Tự động tuân thủ [.agents/rules/troly_rules.md](file:///.agents/rules/troly_rules.md) và [.agents/skills/troly-prompt-refiner/SKILL.md](file:///.agents/skills/troly-prompt-refiner/SKILL.md).
+- **Quy trình Tối ưu Token**: Áp dụng Compact Confirmation Gate, đọc vi phẫu (Targeted Reading) và sửa vi phẫu (Surgical Edits) để tối ưu hoá tốc độ và chi phí token.
+

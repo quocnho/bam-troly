@@ -18,8 +18,9 @@ Timer {
         var c = appController.getCursorPos()
         var sW = Screen.desktopAvailableWidth > 0 ? Screen.desktopAvailableWidth : Screen.width
         var sH = Screen.desktopAvailableHeight > 0 ? Screen.desktopAvailableHeight : Screen.height
-        var nx = c.x - 58
-        var ny = c.y - 58
+        // Con trỏ đặt ở trung tâm thân chú chó (50, 50)
+        var nx = c.x - 50
+        var ny = c.y - 50
         targetWindow.x = Math.max(0, Math.min(sW - targetWindow.width, nx))
         targetWindow.y = Math.max(0, Math.min(sH - targetWindow.height, ny))
     }

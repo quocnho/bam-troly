@@ -2,7 +2,7 @@ import QtQuick
 
 Rectangle {
     id: btnRoot
-    width: 26; height: 26; radius: 13
+    width: 24; height: 24; radius: 12
     color: mouseArea.containsMouse ? (isDanger ? "#DC2626" : (isActive ? "#3B82F6" : "#374151"))
                                   : (isActive ? "#2563EB" : "#1F2937")
     border.color: isActive ? "#60A5FA" : (mouseArea.containsMouse ? "#9CA3AF" : "#4B5563")
@@ -21,7 +21,7 @@ Rectangle {
     Text {
         anchors.centerIn: parent
         text: btnRoot.iconText
-        font.pixelSize: 13
+        font.pixelSize: 12
         color: "#F9FAFB"
     }
 
@@ -29,14 +29,8 @@ Rectangle {
         id: mouseArea
         anchors.fill: parent
         hoverEnabled: true
-        cursorShape: btnRoot.iconText === "✋" ? Qt.SizeAllCursor : Qt.PointingHandCursor
+        cursorShape: Qt.PointingHandCursor
         acceptedButtons: Qt.LeftButton
-
-        onPressed: (mouse) => {
-            if (btnRoot.iconText === "✋" && btnRoot.Window.window) {
-                btnRoot.Window.window.startSystemMove();
-            }
-        }
         onClicked: btnRoot.clicked()
     }
 }

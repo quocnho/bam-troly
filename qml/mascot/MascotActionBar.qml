@@ -2,7 +2,7 @@ import QtQuick
 
 Item {
     id: barRoot
-    width: 32; height: col.height
+    width: 26; height: col.height
     opacity: isVisible ? 1.0 : 0.0
     visible: opacity > 0.001
     z: 100
@@ -17,7 +17,7 @@ Item {
 
     Column {
         id: col
-        spacing: 5
+        spacing: 4
         anchors.centerIn: parent
 
         MascotActionButton {
