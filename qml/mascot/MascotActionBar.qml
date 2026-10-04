@@ -2,7 +2,7 @@ import QtQuick
 
 Item {
     id: barRoot
-    width: 28; height: col.height
+    width: 32; height: col.height
     opacity: isVisible ? 1.0 : 0.0
     visible: opacity > 0.001
     z: 100
@@ -12,14 +12,8 @@ Item {
     signal triggerDrag()
     signal triggerSettings()
     signal triggerExit()
-    signal hoverEntered()
-    signal hoverExited()
 
-    Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
-
-    HoverHandler {
-        onHoveredChanged: if (hovered) barRoot.hoverEntered(); else barRoot.hoverExited()
-    }
+    Behavior on opacity { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
 
     Column {
         id: col

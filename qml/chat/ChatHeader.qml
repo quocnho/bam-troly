@@ -53,7 +53,7 @@ Rectangle {
             status: (controller && controller.isGenerating) ? "streaming" : "idle"
         }
 
-        Text { text: "Trợ lý (BamOS)"; color: headerRoot.isDark ? "#f0f0f2" : "#1a1a1c"; font.bold: true; font.pixelSize: 12 }
+        Text { text: "Cửa sổ chính"; color: headerRoot.isDark ? "#f0f0f2" : "#1a1a1c"; font.bold: true; font.pixelSize: 12 }
     }
 
     Row {

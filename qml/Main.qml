@@ -8,20 +8,15 @@ Window {
     id: dogWindow
     property var appController: null
     property bool isPinned: true
-    property bool syncingWinPos: false
     property bool initialized: false
-    property bool isMovingDog: false
 
-    visible: true; width: 144; height: 116; color: "transparent"
+    visible: true; width: 148; height: 116; color: "transparent"
     flags: isPinned ? (Qt.Window | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
                     : (Qt.Window | Qt.FramelessWindowHint)
 
-    Timer { id: savePosTimer; interval: 350; repeat: false; onTriggered: if (appController) appController.savePosition(dogWindow.x, dogWindow.y) }
-    onXChanged: { if (initialized) savePosTimer.restart(); if (chatWin && chatWin.visible && !syncingWinPos) chatWin.realignToDog(); }
-    onYChanged: { if (initialized) savePosTimer.restart(); if (chatWin && chatWin.visible && !syncingWinPos) chatWin.realignToDog(); }
-
-    MascotFollowMover { targetWindow: dogWindow; appController: dogWindow.appController; isMoving: dogWindow.isMovingDog }
-    Timer { id: hideBarTimer; interval: 650; repeat: false; onTriggered: actionBar.isVisible = false }
+    Timer { id: savePosTimer; interval: 400; repeat: false; onTriggered: if (appController && initialized) appController.savePosition(dogWindow.x, dogWindow.y) }
+    onXChanged: { if (initialized) savePosTimer.restart(); if (chatWin && chatWin.visible) chatWin.realignToDog(); }
+    onYChanged: { if (initialized) savePosTimer.restart(); if (chatWin && chatWin.visible) chatWin.realignToDog(); }
 
     function updateDogPos() {
         var sW = Screen.desktopAvailableWidth > 0 ? Screen.desktopAvailableWidth : Screen.width;
@@ -29,30 +24,37 @@ Window {
         var defX = sW - width - 24; var defY = sH - height - 24;
         if (appController) {
             var p = appController.getSavedPosition(defX, defY);
-            if (p.x < 0 || p.x > sW - width || p.y < 0 || p.y > sH - height) { x = defX; y = defY; } else { x = p.x; y = p.y; }
+            if (p.x <= 10 || p.x > sW - width || p.y <= 10 || p.y > sH - height) { x = defX; y = defY; } else { x = p.x; y = p.y; }
         } else { x = defX; y = defY; }
         initialized = true;
     }
     Component.onCompleted: { updateDogPos(); mascotDog.wakeUp(); }
     Screen.onWidthChanged: updateDogPos(); Screen.onHeightChanged: updateDogPos()
 
+    HoverHandler {
+        id: winHover
+        onHoveredChanged: if (!hovered) hideTimer.restart()
+    }
+    Timer { id: hideTimer; interval: 350; repeat: false; onTriggered: if (!winHover.hovered) actionBar.isVisible = false }
+
     DogMascotHost {
         id: mascotDog; width: 116; height: 116; targetWindow: dogWindow; appController: dogWindow.appController
-        onHoverEntered: { hideBarTimer.stop(); actionBar.isVisible = true }
-        onHoverExited: hideBarTimer.restart()
+        onHoverEntered: { hideTimer.stop(); actionBar.isVisible = true }
         onDogStateChanged: if ((dogState === "lying" || dogState === "sleeping") && appController && appController.isExpanded) appController.isExpanded = false
-        onClicked: {
-            if (dogWindow.isMovingDog) { dogWindow.isMovingDog = false; return; }
-            if (appController) { appController.isExpanded = !appController.isExpanded; if (appController.isExpanded) Qt.callLater(chatWin.focusInput); }
+        onClicked: if (appController) {
+            appController.isExpanded = !appController.isExpanded
+            if (appController.isExpanded) Qt.callLater(chatWin.focusInput)
         }
     }
 
     MascotActionBar {
-        id: actionBar; anchors.left: mascotDog.left; anchors.leftMargin: 104
-        anchors.verticalCenter: mascotDog.verticalCenter; isDragArmed: dogWindow.isMovingDog
-        onHoverEntered: hideBarTimer.stop(); onHoverExited: hideBarTimer.restart()
-        onTriggerDrag: { dogWindow.isMovingDog = !dogWindow.isMovingDog; if (dogWindow.isMovingDog) dogWindow.startSystemMove(); }
-        onTriggerSettings: if (appController) { appController.isExpanded = !appController.isExpanded; if (appController.isExpanded) Qt.callLater(chatWin.focusInput); }
+        id: actionBar; x: 116; anchors.verticalCenter: mascotDog.verticalCenter
+        onHoverEntered: hideTimer.stop()
+        onTriggerDrag: dogWindow.startSystemMove()
+        onTriggerSettings: if (appController) {
+            appController.isExpanded = !appController.isExpanded
+            if (appController.isExpanded) Qt.callLater(chatWin.focusInput)
+        }
         onTriggerExit: if (appController) appController.quitApp(); else Qt.quit()
     }
 

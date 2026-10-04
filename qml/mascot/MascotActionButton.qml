@@ -29,10 +29,14 @@ Rectangle {
         id: mouseArea
         anchors.fill: parent
         hoverEnabled: true
-        cursorShape: Qt.PointingHandCursor
+        cursorShape: btnRoot.iconText === "✋" ? Qt.SizeAllCursor : Qt.PointingHandCursor
         acceptedButtons: Qt.LeftButton
-        propagateComposedEvents: false
-        preventStealing: true
-        onClicked: (mouse) => { mouse.accepted = true; btnRoot.clicked(); }
+
+        onPressed: (mouse) => {
+            if (btnRoot.iconText === "✋" && btnRoot.Window.window) {
+                btnRoot.Window.window.startSystemMove();
+            }
+        }
+        onClicked: btnRoot.clicked()
     }
 }

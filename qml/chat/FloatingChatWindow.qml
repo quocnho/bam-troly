@@ -17,30 +17,16 @@ Window {
         if (!dogWindow) return;
         var sW = Screen.desktopAvailableWidth > 0 ? Screen.desktopAvailableWidth : Screen.width;
         var sH = Screen.desktopAvailableHeight > 0 ? Screen.desktopAvailableHeight : Screen.height;
-        var targetX = dogWindow.x + (dogWindow.width - width) / 2;
-        var targetY = dogWindow.y - height - 12;
-        if (targetY < 12) targetY = Math.min(sH - height - 12, dogWindow.y + dogWindow.height + 12);
+        // Chú chó (rộng 116) nằm ở góc dưới bên phải cửa sổ chính
+        var targetX = dogWindow.x + 116 - width;
+        // Cửa sổ chính nằm ở trên đầu chú chó
+        var targetY = dogWindow.y - height - 8;
+        if (targetY < 12) targetY = Math.min(sH - height - 12, dogWindow.y + dogWindow.height + 8);
         x = Math.max(12, Math.min(sW - width - 12, targetX));
         y = Math.max(12, Math.min(sH - height - 12, targetY));
     }
 
     onVisibleChanged: if (visible) realignToDog()
-
-    onXChanged: {
-        if (visible && dogWindow && !dogWindow.syncingWinPos) {
-            dogWindow.syncingWinPos = true;
-            dogWindow.x = x + width - dogWindow.width;
-            dogWindow.syncingWinPos = false;
-        }
-    }
-
-    onYChanged: {
-        if (visible && dogWindow && !dogWindow.syncingWinPos) {
-            dogWindow.syncingWinPos = true;
-            dogWindow.y = y + height + 8;
-            dogWindow.syncingWinPos = false;
-        }
-    }
 
     ChatWindow {
         id: chatView; anchors.fill: parent; targetWindow: chatWinRoot
