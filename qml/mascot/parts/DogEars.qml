@@ -8,6 +8,7 @@ Item {
     property bool isAlert: false
     property real randomTiltL: 0; property real randomTiltR: 0
     property real halfFoldL: 0; property real halfFoldR: 0
+    property real springAngleL: 0; property real springAngleR: 0
     // Thu gọn chiều rộng để tai áp sát vào đầu hơn
     width: 48; height: 30
 
@@ -22,9 +23,10 @@ Item {
                                 (earsRoot.isAlert ? (isLeft ? -8 : 8) : baseSplay))
         property real dynRot: isLeft ? earsRoot.randomTiltL : earsRoot.randomTiltR
         property real dynFold: isLeft ? earsRoot.halfFoldL : earsRoot.halfFoldR
+        property real springRot: isLeft ? earsRoot.springAngleL : earsRoot.springAngleR
 
         transformOrigin: isLeft ? Item.BottomRight : Item.BottomLeft
-        rotation: stateRot + dynRot + (isLeft ? (earsRoot.earTwitch + earsRoot.earFlap) : (-earsRoot.earTwitch * 0.7 - earsRoot.earFlap))
+        rotation: stateRot + dynRot + springRot + (isLeft ? (earsRoot.earTwitch + earsRoot.earFlap) : (-earsRoot.earTwitch * 0.7 - earsRoot.earFlap))
         Behavior on rotation { NumberAnimation { duration: 220; easing.type: Easing.OutBack } }
 
         Canvas {

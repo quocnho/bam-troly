@@ -4,6 +4,7 @@ Item {
     id: tagRoot
     property string dogState: "active"
     property real chestPuff: 1.0; property real bodyBob: 0
+    property real springTagAngle: 0
     readonly property bool isLying: dogState === "lying" || dogState === "sleeping"
     readonly property bool isSitting: dogState === "sitting"
 
@@ -56,7 +57,7 @@ Item {
             color: "#FFFFFF"
         }
 
-        rotation: tagRoot.isLying ? -2.5 : (Math.sin(tagRoot.bodyBob * 1.5) * 3.5)
+        rotation: (tagRoot.isLying ? -2.5 : (Math.sin(tagRoot.bodyBob * 1.5) * 3.5)) + tagRoot.springTagAngle
         Behavior on rotation { NumberAnimation { duration: 180; easing.type: Easing.OutSine } }
         Behavior on width { NumberAnimation { duration: 250; easing.type: Easing.OutBack } }
         Behavior on height { NumberAnimation { duration: 250; easing.type: Easing.OutBack } }

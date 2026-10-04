@@ -5,6 +5,7 @@ Item {
     property string dogState: "active"
     property bool isBarking: false
     property real tailWag: 0; property real curlFlex: 0
+    property real springAngle: 0
     width: 22; height: 28
 
     // Đuôi vểnh cao tự nhiên, gọn gàng
@@ -44,7 +45,7 @@ Item {
         anchors.bottom: parent.bottom; anchors.right: parent.right
         width: 13; height: 24
         transformOrigin: Item.BottomRight
-        rotation: tailRoot.tailBaseAngle + tailRoot.tailWag
+        rotation: tailRoot.tailBaseAngle + tailRoot.tailWag + tailRoot.springAngle
 
         // Thân đuôi nhỏ nhắn hơn, thuôn gọn
         Rectangle {

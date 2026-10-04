@@ -11,6 +11,7 @@ Item {
     property bool isAlert: false
     property bool isLicking: false
     property real earFlap: 0
+    property real springAngleL: 0; property real springAngleR: 0
     width: 54; height: 46
 
     property real baseTiltAngle: mascotHeadRoot.dogState === "sitting" ? 8 :
@@ -30,6 +31,8 @@ Item {
             dogState: mascotHeadRoot.dogState
             isAlert: mascotHeadRoot.isAlert
             earFlap: mascotHeadRoot.earFlap
+            springAngleL: mascotHeadRoot.springAngleL
+            springAngleR: mascotHeadRoot.springAngleR
             anchors.horizontalCenter: parent.horizontalCenter
             y: -10; z: -1
         }

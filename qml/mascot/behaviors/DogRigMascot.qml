@@ -9,14 +9,15 @@ Item {
     property bool isHovered: false
     property real gazeX: 0; property real gazeY: 0; property bool isTrackingMouse: false
     property real randomPawLift: 0; property bool isLeftPawAction: false
-    property real headTilt: 0; property real chestPuff: 1.0; property real squashY: 1.0
-    property real bodyBob: 0; property real jumpY: 0; property real bothPawsLift: 0
-    property bool isAlert: isHovered || isBarking; property real earFlap: 0
+    property real headTilt: 0; property real chestPuff: 1.0; property real bodyBob: 0
+    property real squashY: 1.0; property real squashX: 1.0; property real jumpY: 0
+    property real physicsSquashX: 1.0; property real physicsSquashY: 1.0
+    property real bothPawsLift: 0; property bool isAlert: isHovered || isBarking; property real earFlap: 0
     property bool isLicking: isHovered && dogState !== "sleeping" && dogState !== "lying" && !isBarking
+    property real springEarL: 0; property real springEarR: 0; property real springTail: 0; property real springTag: 0
     function bark(showBubble) { barkFlow.play(showBubble === true) }
     function jumpAndBounce() { jumpFlow.play() }
 
-    // Nhịp thở khi thức (nhanh 650ms) vs khi ngủ (êm đềm sâu lắng 1200ms)
     SequentialAnimation {
         running: !mascotRoot.isBarking && jumpY === 0; loops: Animation.Infinite
         NumberAnimation {
@@ -39,7 +40,10 @@ Item {
 
         DogTorso {
             dogState: mascotRoot.dogState; isBarking: mascotRoot.isBarking
-            chestPuff: mascotRoot.chestPuff; squashY: mascotRoot.squashY
+            chestPuff: mascotRoot.chestPuff
+            squashY: mascotRoot.squashY * mascotRoot.physicsSquashY
+            squashX: mascotRoot.squashX * mascotRoot.physicsSquashX
+            springTailAngle: mascotRoot.springTail
             legLiftRight: mascotRoot.bothPawsLift > 0 ? mascotRoot.bothPawsLift :
                           (mascotRoot.dogState !== "sleeping" ? (!mascotRoot.isLeftPawAction ? mascotRoot.randomPawLift : 0) : 0)
             legLiftLeft: mascotRoot.bothPawsLift > 0 ? mascotRoot.bothPawsLift :
@@ -51,6 +55,7 @@ Item {
             dogState: mascotRoot.dogState; isBarking: mascotRoot.isBarking
             headTiltAngle: mascotRoot.headTilt; isTrackingMouse: mascotRoot.isTrackingMouse
             isAlert: mascotRoot.isAlert; isLicking: mascotRoot.isLicking; earFlap: mascotRoot.earFlap
+            springAngleL: mascotRoot.springEarL; springAngleR: mascotRoot.springEarR
             gazeX: mascotRoot.gazeX; gazeY: mascotRoot.gazeY
             anchors.horizontalCenter: parent.horizontalCenter
             y: mascotRoot.dogState === "sleeping" ? 24 : (mascotRoot.dogState === "lying" ? 19 :
